@@ -1,0 +1,65 @@
+% Will Faulkner, will.faulkner@colorado.edu
+clear
+close all
+clc
+% Measurements for Samples
+% Brittle 
+% Width in Middle=0.5 inches
+% Thickness = 0.185 inches
+% Total length = 5.013 inches
+areabrittle = 0.5*0.185;
+% Length in Extensometer
+lengthbrittle = 1.0;
+
+% Ductile
+% Width in Middle=0.502 inches
+% Thickness = 0.191 inches
+% Total length = 4.981 inches
+areaductile = 0.502*0.191;
+% Length in Extensometer
+lengthductile = 1.0;
+
+% Read in data
+load 'Thu3pmBrittle.dms'
+load 'Thu3pmductile.dms'
+timebrittle = Thu3pmBrittle(:,1);
+
+% Calculate Stress Vector
+stressbrittle = zeros(1,95);
+% this is assuming lbs for the unit
+for i=1:95
+    stressbrittle(1,i)= Thu3pmBrittle(i,2)/areabrittle;
+end
+% Calculate Strain Vector
+strainbrittle = zeros(1,95);
+for i=1:95
+    strainbrittle(1,i)= (lengthbrittle + Thu3pmBrittle(i,3))/lengthbrittle;
+end
+% Brittle Modulus of Elasticity
+xb = strainbrittle(1,4:93);
+yb = stressbrittle(1,4:93);
+pb = polyfit(xb,yb,1)
+
+% Ductile
+% Calculate Stress Vector
+stressductile = zeros(1,67);
+% this is assuming lbs for the unit
+for i=1:67
+    stressductile(1,i)= Thu3pmductile(i,2)/areaductile;
+end
+% Calculate Strain Vector
+strainductile = zeros(1,67);
+for i=1:67
+    strainductile(1,i)= (lengthductile + Thu3pmductile(i,3))/lengthductile;
+end
+
+%Plot
+figure
+subplot(1,2,1);
+title('Scatterplot for Brittle');
+scatter(strainbrittle,stressbrittle) 
+
+
+subplot(1,2,2);
+title('Scatterplot for Ductile');
+scatter(strainductile,stressductile)
